@@ -1,35 +1,22 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-// One line of earned pride: a quiet moment, a small person, a long effort
-// finally landing. Written fresh for make.fun's "One Line of Earned Pride".
+// Resubmission for "One Line of Earned Pride": a fresh moment, not the
+// first entry's — an older woman, a year of night classes, and a signature
+// that finally belongs to her. One line, one read, no flourish.
 
-/**
- * Returns the entry line: one line, 1-240 characters, no trailing newline.
- * The text is fixed and deterministic; the helper exists so the line has a
- * single source of truth shared by the file write and the stdout print.
- */
-function entryText(): string {
-  return "In front of the whole class, Mara read the page aloud without stopping once, and her stutter stayed quiet for the first time all year.";
+const ENTRY =
+  "At sixty-eight, after a year of night classes, Amira signed her own name on her grandson's birthday card, slowly, in ink, then underlined it twice.";
+
+// Gate: one line, 1-240 characters, not only whitespace. Fail loudly here
+// if an edit ever breaks it, instead of shipping an invalid entry.
+if (ENTRY.length < 1 || ENTRY.length > 240 || ENTRY.trim().length === 0) {
+  throw new Error(`entry length ${ENTRY.length} is outside the 1-240 gate`);
 }
 
-/**
- * Writes `text` to `<dir>/entry.txt` with exactly that content and no
- * trailing newline. Creates `dir` first. Any failure is swallowed: a
- * failed write must never break the run, the line still goes to stdout.
- */
-function writeEntryFile(dir: string, text: string): void {
-  try {
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "entry.txt"), text, "utf8");
-  } catch {
-    // Ignore: stdout below is the guaranteed delivery path.
-  }
-}
-
-const LINE = entryText();
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 
-writeEntryFile(outDir, LINE);
+mkdirSync(outDir, { recursive: true });
+writeFileSync(join(outDir, "entry.txt"), ENTRY, "utf8");
 
-process.stdout.write(LINE + "\n");
+process.stdout.write(ENTRY + "\n");
